@@ -56,7 +56,7 @@ class FiniteAutomaton:
         transitions = {}
         my_transitions = self.δ
         for key in my_transitions.keys():
-            my_transitions[key] = {element for element in my_transitions[key] if not element.islower()}
+            my_transitions[key] = {element for element in my_transitions[key] if element not in self.Σ}
             new_transition = {}
             if self.is_nfa():
                 new_transition[key[1]] = my_transitions[key]

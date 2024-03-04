@@ -5,7 +5,7 @@ class Grammar:
         self.VN = VN
         self.VT = VT
         self.P = P
-        #print(f'VN={self.VN}\nVT={self.VT}\nP={self.P}')
+        print(f'VN={self.VN}\nVT={self.VT}\nP={self.P}')
     def generate_string(self, symbol='S', current_string=''):
         if symbol == '':
             return current_string
@@ -29,14 +29,14 @@ class Grammar:
         if all(string in (set(self.VN) | self.VT) and key in self.VN for key, array in self.P.items() for string in array):
             return "Grammar is not valid"
         value = "Type 0 - Recursively Enumerable Grammar"
-        if all((len(string) == 2 and string[0].islower() and string[1].isupper()) or
-               (len(string) == 1 and string.islower()) for array in self.P.values() for string in array):
+        if all((len(string) == 2 and string[0] in self.VT and string[1] in self.VN) or
+               (len(string) == 1 and string in self.VT) for array in self.P.values() for string in array):
             return "Type 3 - Right Regular Grammar"
-        elif all((len(string) == 2 and string[0].isupper() and string[1].islower()) or
-                 (len(string) == 1 and string.islower()) for array in self.P.values() for string in array):
+        elif all((len(string) == 2 and string[0] in self.VN and string[1] in self.VT) or
+                 (len(string) == 1 and string in self.VT) for array in self.P.values() for string in array):
             return "Type 3 - Left Regular Grammar"
-        if any((sum(symbol.isupper() for symbol in string) > 1 or len(string) > 2
-                  or sum(symbol.islower() for symbol in string) > 1 or string == '')
+        if any((sum(symbol in self.VN for symbol in string) > 1 or len(string) > 2
+                  or sum(symbol in self.VT for symbol in string) > 1 or string == '')
                     for array in self.P.values() for string in array):
             value = "Type 2 - Context-Free Grammar"
         if (any(len(state) > 1 for state in self.P.keys()) and
