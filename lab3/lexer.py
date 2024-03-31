@@ -131,6 +131,8 @@ while True:
         break
     if not text:
         continue
+    if text == "Finish Line":
+        break
     lexer = Lexer(text)
     token = lexer.get_next_token()
     while token.type != 'EOF':
@@ -143,6 +145,7 @@ elif number != 2
 var = 23 * number / 24
 else:
 for i in range(30)
-if "2sdsafsd" < "21dfasrwr":
+if "2sdsafsd" < "21dfasrwr": #this is a comment
 if (1 != 29:
+str = "2af
 """
