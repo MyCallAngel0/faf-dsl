@@ -118,13 +118,23 @@ pattern1 = "(S|T)(U|V)w*y+24"
 pattern2 = "L(M|N)O^3P*Q(2|3)"
 pattern3 = "R*S(T|U|V)W(X|Y|Z)^2"
 
-generated_string = generate_string(pattern1)
-print("Generated string:", generated_string)
-generated_string = generate_string(pattern2)
-print("Generated string:", generated_string)
-generated_string = generate_string(pattern3)
-print("Generated string:", generated_string)
+pattern_1_strings = []
+pattern_2_strings = []
+pattern_3_strings = []
 
+for i in range(5):
+    pattern_1_strings.append(generate_string(pattern1))
+    pattern_2_strings.append(generate_string(pattern2))
+    pattern_3_strings.append(generate_string(pattern3))
+generated_string = generate_string(pattern1)
+print(f"Generated strings for {pattern1}:", pattern_1_strings)
+print(f"Generated strings for {pattern2}:", pattern_2_strings)
+print(f"Generated strings for {pattern3}:", pattern_3_strings)
+print()
+show_sequence(pattern1)
+print()
+show_sequence(pattern2)
+print()
 show_sequence(pattern3)
 
 
