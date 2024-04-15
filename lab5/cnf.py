@@ -28,7 +28,7 @@ class Grammar:
                 self.P.pop(state)
                 self.Vn.remove(state)
 
-    def eliminate_state(self, production, state):
+    def generate_combinations(self, production, state):
         new_productions = [production]
         for c in new_productions:
             if state in c:
@@ -52,11 +52,11 @@ class Grammar:
                     new_productions = []
                     for production in value:
                         if epsilon_state in production and len(production) > 1:
-                                new_productions += self.eliminate_state(production, epsilon_state)
+                                new_productions += self.generate_combinations(production, epsilon_state)
                     value += new_productions
         # print(self.P)
         self.check_empty()
-        print(self.P)
+        # print(self.P)
         return self.P
 
     def eliminate_unit(self):
@@ -68,7 +68,7 @@ class Grammar:
                     unit_productions.setdefault(state, []).append(production)
 
         if not bool(unit_productions):
-            return
+            return self.P
 
         for state in self.P.keys():
             if state in unit_productions.keys():
@@ -81,8 +81,8 @@ class Grammar:
         return self.P
 
     def eliminate_inaccessible(self):
-        reachable_symbols = set()  # Set to store reachable symbols
-        pending_symbols = [list(self.P.keys())[0]]  # Start with the start symbol
+        reachable_symbols = set()
+        pending_symbols = [list(self.P.keys())[0]]
 
         while pending_symbols:
             symbol = pending_symbols.pop(0)
@@ -92,13 +92,11 @@ class Grammar:
                     if char.isupper() and char not in reachable_symbols:
                         pending_symbols.append(char)
 
-        # Remove unreachable symbols from the grammar
         unreachable_symbols = set(self.P.keys()) - reachable_symbols
         for symbol in unreachable_symbols:
             del self.P[symbol]
             self.Vn.remove(symbol)
 
-        # Remove productions containing unreachable symbols
         for symbol, productions in self.P.items():
             self.P[symbol] = [prod for prod in productions if all(char not in unreachable_symbols for char in prod)]
         # print(self.P)
@@ -117,28 +115,36 @@ class Grammar:
                     changed = True
                     continue
                 non_terminals = set()
+                if len(self.P[symbol]) == 1 and symbol in self.P[symbol][0]:
+                    continue
                 for prod in self.P[symbol]:
-                    non_terminals.update(char for strings in prod for char in strings if (char.isupper() and char != symbol))
+                    non_terminals.update(char for strings in prod for char in strings if char.isupper() and char != symbol)
                 if all(non_terminal in productive_symbols for non_terminal in non_terminals):
                     productive_symbols.update(symbol)
                     changed = True
 
-        if len(productive_symbols) != len(self.Vn):
-            raise Exception("Not all symbols are productive")
+        if len(productive_symbols) == len(self.Vn):
+            return self.P
+        else:
+            for symbol in self.Vn:
+                if symbol not in productive_symbols:
+                    self.P[symbol] = []
+        self.check_empty()
+        return self.P
 
     def to_cnf(self):
         self.eliminate_epsilon()
         self.eliminate_unit()
         self.eliminate_inaccessible()
         self.eliminate_non_productive()
-        print(self.P)
+        self.eliminate_epsilon()
+        self.eliminate_unit()
+        # print(self.P)
         new_productions = {}
         symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         for state, productions in self.P.items():
-            # print("\nKey:", state)
             new_strings = []
             for prod in productions:
-                # print(prod)
                 if len(prod) != 1 and not(len(prod) == 2 and prod[0].isupper() and prod[1].isupper()):
                     for n in range(len(prod)):
                         if prod[n].islower():
@@ -148,30 +154,27 @@ class Grammar:
                                     symbols = symbols.replace(symbols[0], '')
                                 symbol = symbols[0]
                                 self.Vn.add(symbol)
-                                # print("Symbol:", symbol)
                                 new_productions[symbol] = list(prod[n])
                             else:
                                 symbol = assigned_key
                             prod = prod[:n] + symbol + prod[n + 1:]
-                            # print("New prod:", prod)
                     while len(prod) > 2:
                         assigned_key = next((key for key, array in new_productions.items() if prod[0] + prod[1] in array), None)
                         if assigned_key is None:
-                            while symbols[0] in Vn:
+                            while symbols[0] in self.Vn:
                                 symbols = symbols.replace(symbols[0], '')
                             symbol = symbols[0]
-                            Vn.add(symbol)
-                            # print("Symbol:", symbol)
+                            self.Vn.add(symbol)
                             str = prod[0] + prod[1]
                             new_productions[symbol] = [str]
                         else:
                             symbol = assigned_key
                         prod = prod.replace(prod[0] + prod[1], symbol)
-                        # print("New prod:", prod)
                 new_strings.append(prod)
             self.P[state] = new_strings
 
         self.P.update(new_productions)
+        return self.P
 
     def print_grammar(self):
         print("P = {")
@@ -191,14 +194,13 @@ if __name__ == "__main__":
     P = {
         'S': ['dB', 'B'],
         'A': ['d', 'S', 'aAdCB'],
-        'B': ['aC', 'bA', 'AC'],
+        'B': ['aC', 'bA', 'A'],
         'C': [''],
         'E': ['AS']
     }
 
-    # grammar = Grammar(Vn, Vt, P)
-    grammar = Grammar(variants.Vn1, variants.Vt1, variants.P1)
+    grammar = Grammar(Vn, Vt, P)
+    # grammar = Grammar(variants.Vn13, variants.Vt13, variants.P13)
     grammar.to_cnf()
     grammar.print_grammar()
-    print(Grammar(variants.Vn2, variants.Vt2, variants.P2).eliminate_unit())
 
