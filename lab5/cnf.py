@@ -142,6 +142,8 @@ class Grammar:
         # print(self.P)
         new_productions = {}
         symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        for state in self.P.keys():
+            self.P[state] = sorted(self.P[state])
         for state, productions in self.P.items():
             new_strings = []
             for prod in productions:

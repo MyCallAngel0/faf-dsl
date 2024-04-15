@@ -33,8 +33,8 @@ class TestChomskyNormalForm(unittest.TestCase):
 
     def test_chomsky_for_variant13(self):
         grammar_to_cnf_test = cnf.Grammar(variants.Vn13, variants.Vt13, variants.P13).to_cnf()
-        dict_to_verify = {'S': ['BD', 'FB', 'DA', 'a', 'GB'], 'A': ['BD', 'FB', 'b', 'BA', 'a', 'GB'], 'B': ['b', 'BA'],
-                          'D': ['BA'], 'C': ['b'], 'E': ['CD'], 'F': ['EA'], 'G': ['CA']}
+        dict_to_verify = {'S': ['BD', 'DA', 'a', 'EB', 'GB'], 'A': ['BA', 'BD', 'a', 'b', 'EB', 'GB'], 'B': ['BA', 'b'],
+                          'D': ['BA'], 'C': ['b'], 'E': ['CA'], 'F': ['CD'], 'G': ['FA']}
         for key in grammar_to_cnf_test.keys():
             grammar_to_cnf_test[key] = set(grammar_to_cnf_test[key])
             dict_to_verify[key] = set(dict_to_verify[key])
@@ -42,8 +42,8 @@ class TestChomskyNormalForm(unittest.TestCase):
 
     def test_chomsky_for_variant19(self):
         grammar_to_cnf_test = cnf.Grammar(variants.Vn19, variants.Vt19, variants.P19).to_cnf()
-        dict_to_verify = {'S': ['a', 'CB', 'DA'], 'A': ['CB', 'GB', 'DA', 'a', 'd'], 'B': ['CB', 'GB', 'DA', 'a', 'd'],
-                          'C': ['d'], 'D': ['b'], 'E': ['a'], 'F': ['EA'], 'G': ['FC']}
+        dict_to_verify = {'S': ['a', 'CA', 'DB'], 'A': ['a', 'GB', 'CA', 'd', 'DB'], 'B': ['a', 'GB', 'CA', 'd', 'DB'],
+                          'C': ['b'], 'D': ['d'], 'E': ['a'], 'F': ['EA'], 'G': ['FD']}
         for key in grammar_to_cnf_test.keys():
             grammar_to_cnf_test[key] = set(grammar_to_cnf_test[key])
             dict_to_verify[key] = set(dict_to_verify[key])
